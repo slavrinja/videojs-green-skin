@@ -1,0 +1,44 @@
+{
+  "name": "videojs-vast-vpaid",
+  "version": "0.0.0",
+  "authors": [
+    "Carlos Serrano <carlos.pastor@mailonline.co.uk>"
+  ],
+  "description": "VAST plugin to use with video.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MailOnline/videojs-vast-vpaid"
+  },
+  "main": [
+    "bin/videojs-vast-vpaid.min.js",
+    "bin/videojs-vast-vpaid.min.css"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "vpaid",
+    "html5",
+    "flash",
+    "vast",
+    "videojs",
+    "js",
+    "video",
+    "iab"
+  ],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+    "build",
+    "frontend/demo/*"
+  ],
+  "dependencies": {
+    "VPAIDFLASHClient": "^1.0.2",
+    "VPAIDHTML5Client": "^0.1.14"
+  },
+  "devDependencies": {
+    "videojs_5": "video.js#5",
+    "videojs_4": "video.js#4"
+  }
+}

@@ -1,0 +1,196 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <link href="/js/video-js-6.9.0/video-js.css" rel="stylesheet">
+    <link href="/js/videojs-resolution-switcher.css" rel="stylesheet">
+    <link href="/js/videojs-vast-vpaid/bin/videojs.vast.vpaid.min.css" rel="stylesheet">
+    <link href="/js/videojs.theaterMode.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
+
+    <script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
+</head>
+<body>
+
+<h1>MP4</h1>
+<video id="player" class="video-js vjs-default-skin" >
+    <source src="https://vjs.zencdn.net/v/oceans.mp4" type='video/mp4'>
+    <track kind="subtitles" src="/subtitles/english.vtt" srclang="en" label="English" default>
+    <track kind="subtitles" src="/subtitles/russian.vtt" srclang="ru" label="Russian">
+    <track kind="subtitles" src="/subtitles/polish.vtt" srclang="pl" label="Polish">
+</video>
+
+<h1>HLS</h1>
+<video id="video-hls" class="video-js vjs-default-skin" >
+    <source src="https://vjs.zencdn.net/v/oceans.mp4" type='video/mp4'>
+</video>
+
+<script src="/js/video-js-6.9.0/video.js"></script>
+<script src="/js/videojs-resolution-switcher.js"></script>
+<script register-percent="100" src="/js/hola_videojs_hls.js"></script>
+<script src="/js/videojs-vast-vpaid/bin/videojs_5.vast.vpaid.min.js" defer ></script>
+<script src="/js/videojs-vast-vpaid/bin/ie8fix.js" defer ></script>
+<script src="/js/videojs.theaterMode.js" defer ></script>
+<!-- If you'd like to support IE8 (for Video.js versions prior to v7) -->
+<script src="/js/video-js-6.9.0/videojs-ie8.min.js"></script>
+
+<script>
+    var defaultVolume = 0.5;
+
+    var ccOptions = {
+        ccOff: false,
+        styleImplemented: false,
+        oldStyle: '',
+        ccStyle: {
+            'color': 'red',
+            'background-color': 'white',
+            'font-size': '14px',
+            'font-family': 'font-family: Arial,"Helvetica Neue",Helvetica,sans-serif'
+        }
+    };
+
+    // set attribute for theater mode
+    document.getElementsByTagName("body")[0].setAttribute("id", "page");
+
+    // simple player
+    var Player = videojs('player', {
+            fluid: true, // adaptive
+            controls: true,
+            autoplay: false,
+            preload: 'auto',
+            poster: "http://vjs.zencdn.net/v/oceans.png",
+            playbackRates: [0.5, 1, 1.5, 2],
+            volume: defaultVolume,
+            controlBar: {
+                volumePanel: {inline: false}
+            },
+            textTrackSettings: false,
+            plugins: {
+                videoJsResolutionSwitcher: {
+                    default: 'low', // Default resolution [{Number}, 'low', 'high'],
+                    dynamicLabel: true
+                }
+            }
+
+        },
+        /**
+         * resolution change
+         */
+        function(){
+            var player = this;
+            window.player = player;
+            player.updateSrc([
+                { src: 'https://vjs.zencdn.net/v/oceans.mp4?SD', type: 'video/mp4', label:'SD', res:'360'},
+                { src: 'https://vjs.zencdn.net/v/oceans.mp4?HD', type: 'video/mp4', label:'HD', res:'1080'},
+                { src: 'https://vjs.zencdn.net/v/oceans.mp4?4K', type: 'video/mp4', label:'4K', res:'2160'}
+            ]);
+
+            player.on('resolutionchange', function(){
+                console.info('Source changed to %s', player.src());
+            });
+            player.on('play', function(){
+                console.info('PLAY');
+            });
+
+            player.on('ready', function(){
+                //switch off subtitles if need
+                if (ccOptions.ccOff) {
+                    $(".vjs-subs-caps-button li.vjs-menu-item").eq(0).trigger('click');
+                }
+            });
+
+            player.on('texttrackchange', function(){
+                //change subtitles style (HACK)
+                //todo pack to plugin
+
+                // if created subtitles component - changing it's style
+                if ($('#player .vjs-text-track-display>div>div>div').length) {
+
+                    // getting inital style
+                    if (ccOptions.oldStyle == '') {
+                        ccOptions.oldStyle = $('#player .vjs-text-track-display>div>div>div').attr('style');
+                    }
+
+                    // implement new style from options
+                    var newStyle = '';
+                    for (var k in ccOptions.ccStyle){
+                        if (ccOptions.ccStyle.hasOwnProperty(k)) {
+                            newStyle += k + ':' +ccOptions.ccStyle[k]+';';
+                        }
+                    }
+
+                    $('#player .vjs-text-track-display>div>div>div').attr('style', ccOptions.oldStyle + newStyle);
+                }
+            });
+
+            player.theaterMode({ elementToToggle: 'page', className: 'theater-mode' });
+
+            player.on('theaterMode', function(elm, data) {
+                if (data.theaterModeIsOn) {
+                    // do something
+                } else {
+                    // do something else
+                }
+            });
+        });
+
+    //pre-roll
+    videojs.plugin('adssetup', function (opts) {
+        var player = this;
+        var vastAd = player.vastClient({
+            adTagUrl: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpreonly&cmsid=496&vid=short_onecue&correlator=',
+            playAdAlways: true,
+            adCancelTimeout: 5000,
+            verbosity: 4,
+            adsEnabled: true
+        });
+
+        player.on('vast.adError', function (error) {
+            console.log('adError');
+        });
+        player.on('vast.firstPlay', function () {});
+        player.on('vast.adStart', function () {
+            console.log('adStart');
+        });
+        player.on('vast.adSkip', function () {
+            console.log('adSkip');
+        });
+        player.on('vast.adsCancel', function () {
+            console.log('adsCancel');
+        });
+        player.on('vast.contentStart', function () {
+            console.log('contentStart');
+        });
+        player.on('click', function () {
+            console.log('adClick');
+        });
+
+        Player.adssetup({ exampleOption: true });
+    });
+
+    $(document).ready(function() {
+        // HLS player
+        var HLS = videojs("video-hls", {
+        fluid: true, // adaptive
+        controls: true,
+        autoplay: false,
+        preload: 'auto',
+        poster: "http://vjs.zencdn.net/v/oceans.png",
+        volume: defaultVolume,
+        controlBar: {
+            volumePanel: {inline: false}
+        },
+        sources: [
+            {
+                src: 'http://evpp.mm.uol.com.br/redetv1/redetv1/playlist.m3u8',
+                type: 'application/x-mpegURL'
+            }
+        ]
+    });
+    });
+</script>
+</body>
+</html>

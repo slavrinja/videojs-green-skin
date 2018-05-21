@@ -1,0 +1,73 @@
+.vast-skip-button {
+    display: block;
+    position: absolute;
+    /*top: 5px;*/
+	bottom:10px;
+    right: 0;
+    width: auto;
+	min-width:200px;
+    background-color: #000;
+    color: #AAA;
+    /*font-size: 12px;*/
+	font-size: 23px;
+    font-style: italic;
+    line-height: 12px;
+    padding: 10px;
+    z-index: 2;
+	
+	  -webkit-tap-highlight-color: rgba(0,0,0,0);
+	  background: rgba(0,0,0,0.8);
+	  border: 1px solid rgba(255,255,255,0.5);
+	  border-right: 0;
+	  box-sizing: content-box;
+	  color: #fff;
+	  font-family: arial,helvetica,sans-serif;
+	  padding: 15px 7px;
+	  text-align: center;
+	  
+}
+
+@media only screen 
+  and (min-width: 601px) 
+  and (max-width: 1024px) {
+	.vast-skip-button {
+    width: auto;
+	min-width:150px;
+    font-size: 18px;
+    padding: 13px 6px;
+	}
+}
+
+@media only screen and (max-width: 600px) {
+    .vast-skip-button {
+    width: auto;
+	min-width:100px;
+    font-size: 14px;
+    padding: 10px 5px;
+	}
+	  
+	}
+}
+
+.vast-skip-button.enabled {
+    cursor: pointer;
+    color: #fff;
+}
+
+.vast-skip-button.enabled:hover {
+    cursor: pointer;
+    /*background: #333;*/
+}
+
+.vast-blocker {
+    display: block;
+    position: absolute;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
