@@ -9,8 +9,8 @@
     <link href="/js/videojs-resolution-switcher.css" rel="stylesheet">
     <link href="/js/videojs-vast-vpaid/bin/videojs.vast.vpaid.min.css" rel="stylesheet">
     <link href="/js/videojs.theaterMode.css" rel="stylesheet">
+    <link href="/js/videojs.topbar.buttons.css" rel="stylesheet">
     <link href="/css/style.css" rel="stylesheet">
-
     <script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
 </head>
 <body>
@@ -30,16 +30,21 @@
 
 <script src="/js/video-js-6.9.0/video.js"></script>
 <script src="/js/videojs-resolution-switcher.js"></script>
-<script register-percent="100" src="/js/hola_videojs_hls.js"></script>
 <script src="/js/videojs-vast-vpaid/bin/videojs_5.vast.vpaid.min.js" defer ></script>
-<script src="/js/videojs-vast-vpaid/bin/ie8fix.js" defer ></script>
 <script src="/js/videojs.theaterMode.js" defer ></script>
+<script src="/js/videojs.topbar.buttons.js" defer ></script>
+<script register-percent="100" src="/js/hola_videojs_hls.js"></script>
+
 <!-- If you'd like to support IE8 (for Video.js versions prior to v7) -->
 <script src="/js/video-js-6.9.0/videojs-ie8.min.js"></script>
+<script src="/js/videojs-vast-vpaid/bin/ie8fix.js" defer ></script>
 
 <script>
+    'use strict';
+    
     var defaultVolume = 0.5;
 
+    // options of subtitles
     var ccOptions = {
         ccOff: false,
         styleImplemented: false,
@@ -52,90 +57,103 @@
         }
     };
 
-    // set attribute for theater mode
-    document.getElementsByTagName("body")[0].setAttribute("id", "page");
-
     // simple player
     var Player = videojs('player', {
-            fluid: true, // adaptive
-            controls: true,
-            autoplay: false,
-            preload: 'auto',
-            poster: "http://vjs.zencdn.net/v/oceans.png",
-            playbackRates: [0.5, 1, 1.5, 2],
-            volume: defaultVolume,
-            controlBar: {
-                volumePanel: {inline: false}
-            },
-            textTrackSettings: false,
-            plugins: {
-                videoJsResolutionSwitcher: {
-                    default: 'low', // Default resolution [{Number}, 'low', 'high'],
-                    dynamicLabel: true
-                }
-            }
-
+        fluid: true, // adaptive
+        controls: true,
+        autoplay: false,
+        preload: 'auto',
+        poster: "http://vjs.zencdn.net/v/oceans.png",
+        playbackRates: [0.5, 1, 1.5, 2],
+        volume: defaultVolume,
+        controlBar: {
+            volumePanel: {inline: false}
         },
-        /**
-         * resolution change
-         */
-        function(){
-            var player = this;
-            window.player = player;
-            player.updateSrc([
-                { src: 'https://vjs.zencdn.net/v/oceans.mp4?SD', type: 'video/mp4', label:'SD', res:'360'},
-                { src: 'https://vjs.zencdn.net/v/oceans.mp4?HD', type: 'video/mp4', label:'HD', res:'1080'},
-                { src: 'https://vjs.zencdn.net/v/oceans.mp4?4K', type: 'video/mp4', label:'4K', res:'2160'}
-            ]);
+        textTrackSettings: false,
+        plugins: {
+            videoJsResolutionSwitcher: {
+                default: 'low', // Default resolution [{Number}, 'low', 'high'],
+                dynamicLabel: true
+            }
+        }
+    },function(){
+        var player = this;
+        window.player = player;
+        
+        // Add different resolutions
+        player.updateSrc([
+            { src: 'https://vjs.zencdn.net/v/oceans.mp4?SD', type: 'video/mp4', label:'SD', res:'360'},
+            { src: 'https://vjs.zencdn.net/v/oceans.mp4?HD', type: 'video/mp4', label:'HD', res:'1080'},
+            { src: 'https://vjs.zencdn.net/v/oceans.mp4?4K', type: 'video/mp4', label:'4K', res:'2160'}
+        ]);
+        
+        player.on('resolutionchange', function(){});        
+        player.on('play', function(){});
 
-            player.on('resolutionchange', function(){
-                console.info('Source changed to %s', player.src());
-            });
-            player.on('play', function(){
-                console.info('PLAY');
-            });
-
-            player.on('ready', function(){
-                //switch off subtitles if need
-                if (ccOptions.ccOff) {
-                    $(".vjs-subs-caps-button li.vjs-menu-item").eq(0).trigger('click');
-                }
-            });
-
-            player.on('texttrackchange', function(){
-                //change subtitles style (HACK)
-                //todo pack to plugin
-
-                // if created subtitles component - changing it's style
-                if ($('#player .vjs-text-track-display>div>div>div').length) {
-
-                    // getting inital style
-                    if (ccOptions.oldStyle == '') {
-                        ccOptions.oldStyle = $('#player .vjs-text-track-display>div>div>div').attr('style');
-                    }
-
-                    // implement new style from options
-                    var newStyle = '';
-                    for (var k in ccOptions.ccStyle){
-                        if (ccOptions.ccStyle.hasOwnProperty(k)) {
-                            newStyle += k + ':' +ccOptions.ccStyle[k]+';';
-                        }
-                    }
-
-                    $('#player .vjs-text-track-display>div>div>div').attr('style', ccOptions.oldStyle + newStyle);
-                }
-            });
-
-            player.theaterMode({ elementToToggle: 'page', className: 'theater-mode' });
-
-            player.on('theaterMode', function(elm, data) {
-                if (data.theaterModeIsOn) {
-                    // do something
-                } else {
-                    // do something else
-                }
-            });
+        
+        player.on('ready', function(){
+            //switch off subtitles if need
+            if (ccOptions.ccOff) {
+                $(".vjs-subs-caps-button li.vjs-menu-item").eq(0).trigger('click');
+            }
         });
+
+        player.on('texttrackchange', function(){
+            //change subtitles style (HACK)
+            //todo pack to plugin
+
+            // if created subtitles component - changing it's style
+            if ($('#player .vjs-text-track-display>div>div>div').length) {
+
+                // getting inital style
+                if (ccOptions.oldStyle == '') {
+                    ccOptions.oldStyle = $('#player .vjs-text-track-display>div>div>div').attr('style');
+                }
+
+                // implement new style from options
+                var newStyle = '';
+                for (var k in ccOptions.ccStyle){
+                    if (ccOptions.ccStyle.hasOwnProperty(k)) {
+                        newStyle += k + ':' +ccOptions.ccStyle[k]+';';
+                    }
+                }
+
+                $('#player .vjs-text-track-display>div>div>div').attr('style', ccOptions.oldStyle + newStyle);
+            }
+        });
+
+        // set theater mode
+        document.getElementsByTagName("body")[0].setAttribute("id", "page");
+        player.theaterMode({ elementToToggle: 'page', className: 'theater-mode' });
+        player.on('theaterMode', function(elm, data) {
+            if (data.theaterModeIsOn) {
+                // do something
+            } else {
+                // do something else
+            }
+        });
+        
+        // install Topbar Buttons
+        player.topBarButtons({
+            share: {
+                icon: 'fa-share-alt',
+                title: 'Share'
+            },
+            toggleLights: {
+                icon: 'fa-lightbulb-o',
+                title: 'Toggle lights'
+            },
+            watchOnSite: {
+                icon: 'fa-link',
+                title: 'Watch on site',
+                url: 'https://google.com'
+            },
+            feedback: {
+                icon: 'fa-commenting-o',
+                title: 'Feedback'
+            }
+        });
+    });
 
     //pre-roll
     videojs.plugin('adssetup', function (opts) {
@@ -174,22 +192,22 @@
     $(document).ready(function() {
         // HLS player
         var HLS = videojs("video-hls", {
-        fluid: true, // adaptive
-        controls: true,
-        autoplay: false,
-        preload: 'auto',
-        poster: "http://vjs.zencdn.net/v/oceans.png",
-        volume: defaultVolume,
-        controlBar: {
-            volumePanel: {inline: false}
-        },
-        sources: [
-            {
-                src: 'http://evpp.mm.uol.com.br/redetv1/redetv1/playlist.m3u8',
-                type: 'application/x-mpegURL'
-            }
-        ]
-    });
+            fluid: true, // adaptive
+            controls: true,
+            autoplay: false,
+            preload: 'auto',
+            poster: "http://vjs.zencdn.net/v/oceans.png",
+            volume: defaultVolume,
+            controlBar: {
+                volumePanel: {inline: false}
+            },
+            sources: [
+                {
+                    src: 'http://evpp.mm.uol.com.br/redetv1/redetv1/playlist.m3u8',
+                    type: 'application/x-mpegURL'
+                }
+            ]
+        });
     });
 </script>
 </body>

@@ -173,7 +173,7 @@ video-js.vjs-ended .vjs-big-play-button,.video-js.vjs-paused .vjs-big-play-butto
 }
 
 .video-js .vjs-live-display {
-  margin-left: 0.5em;
+  margin-left: 1.8em;
 }
 /*style for theater mode plugin*/
 .theater-mode {

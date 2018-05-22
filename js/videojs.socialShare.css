@@ -1,0 +1,32 @@
+.vjs-social-share {
+  height: 40px;
+  opacity: 0;
+  position: absolute;
+  right: 30px;
+  text-align: center;
+  top: 14px;
+  -webkit-transition: opacity .3s ease-in-out;
+  transition: opacity .3s ease-in-out;
+  width: auto;
+  z-index: 999;
+}
+.vjs-social-share.is-visible,
+.vjs-social-share:hover {
+  opacity: 1;
+}
+.vjs-social-share-link {
+  border: none;
+  cursor: pointer;
+  display: inline;
+  height: 30px;
+  margin-right: 10px;
+  position: relative;
+  width: 30px;
+}
+.vjs-social-share-link:last-of-type {
+  margin-right: 0;
+}
+.vjs-social-share-svg {
+  height: 30px;
+  width: 30px;
+}
